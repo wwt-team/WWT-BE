@@ -11,6 +11,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { AuthErrorMessage } from '../../common/decorators/auth-error-message.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import type { RequestUser } from '../../common/types/request-user.type';
@@ -31,18 +32,21 @@ export class ChatsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
+  @AuthErrorMessage('채팅방을 생성하려면 인증이 필요합니다.')
   createRoom(@Body() dto: CreateChatRoomDto, @CurrentUser() user: RequestUser) {
     return this.chatRoomsService.create(dto, user);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
+  @AuthErrorMessage('채팅방 목록을 조회하려면 인증이 필요합니다.')
   listRooms(@CurrentUser() user: RequestUser, @Query() query: ChatListQueryDto) {
     return this.chatRoomsService.list(user, query);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get(':chatRoomId/messages')
+  @AuthErrorMessage('채팅 메시지를 조회하려면 인증이 필요합니다.')
   listMessages(
     @Param('chatRoomId') chatRoomId: string,
     @CurrentUser() user: RequestUser,
@@ -53,6 +57,7 @@ export class ChatsController {
 
   @UseGuards(JwtAuthGuard)
   @Post(':chatRoomId/messages')
+  @AuthErrorMessage('메시지를 등록하려면 인증이 필요합니다.')
   createMessage(
     @Param('chatRoomId') chatRoomId: string,
     @Body() dto: CreateChatMessageDto,
@@ -63,6 +68,7 @@ export class ChatsController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(':chatRoomId/messages/:messageId')
+  @AuthErrorMessage('메시지를 수정하려면 인증이 필요합니다.')
   updateMessage(
     @Param('chatRoomId') chatRoomId: string,
     @Param('messageId') messageId: string,
@@ -75,6 +81,7 @@ export class ChatsController {
   @UseGuards(JwtAuthGuard)
   @Delete(':chatRoomId/messages/:messageId')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @AuthErrorMessage('메시지를 삭제하려면 인증이 필요합니다.')
   async deleteMessage(
     @Param('chatRoomId') chatRoomId: string,
     @Param('messageId') messageId: string,

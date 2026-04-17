@@ -1,9 +1,10 @@
-import { NestFactory } from '@nestjs/core';
 import { HttpStatus, ValidationPipe, type ValidationError } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ERROR_CODES, type ErrorCode } from './common/constants/error-codes';
+import { DEFAULT_ERROR_MESSAGES } from './common/constants/error-messages';
 import { ApiException } from './common/exceptions/api.exception';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 const validationMessages: Partial<Record<string, string>> = {
   [ERROR_CODES.INVALID_EMAIL_CODE_REQUEST_EMAIL]:
@@ -24,14 +25,14 @@ const validationMessages: Partial<Record<string, string>> = {
   [ERROR_CODES.INVALID_SEARCH_STATUS]:
     '상품의 상태는 판매중, 예약중, 거래완료 중 하나여야 합니다.',
   [ERROR_CODES.INVALID_SEARCH_MIN_PRICE]:
-    'minPrice는 0 이상의 정수여야 합니다.',
+    '최소 가격은 0 이상의 정수여야 합니다.',
   [ERROR_CODES.INVALID_SEARCH_MAX_PRICE]:
-    'maxPrice는 0 이상의 정수여야 합니다.',
+    '최대 가격은 0 이상의 정수여야 합니다.',
   [ERROR_CODES.MISSING_PRODUCT_TITLE]: '상품 제목은 필수입니다.',
   [ERROR_CODES.INVALID_PRODUCT_PRICE]: '상품 가격은 0 이상의 정수여야 합니다.',
   [ERROR_CODES.INVALID_PRODUCT_IMAGE_URLS]:
-    '상품 이미지 URL 형식이 올바르지 않습니다.',
-  [ERROR_CODES.INVALID_PRODUCT_STATUS]: '상품 상태값이 올바르지 않습니다.',
+    '상품 이미지 형식이 올바르지 않습니다.',
+  [ERROR_CODES.INVALID_PRODUCT_STATUS]: '상품 상태가 올바르지 않습니다.',
   [ERROR_CODES.INVALID_TRADE_REQUEST_STATUS]:
     '처리할 수 없는 거래 요청 상태입니다.',
   [ERROR_CODES.INVALID_CHAT_MESSAGE]: '메시지 내용이 올바르지 않습니다.',
@@ -79,11 +80,13 @@ async function bootstrap() {
         return new ApiException(
           HttpStatus.BAD_REQUEST,
           ERROR_CODES.INVALID_LOGIN_EMAIL,
-          '요청값이 올바르지 않습니다.',
+          DEFAULT_ERROR_MESSAGES[ERROR_CODES.INVALID_LOGIN_EMAIL],
         );
       },
     }),
   );
+
   await app.listen(process.env.PORT ?? 3000);
 }
+
 bootstrap();

@@ -11,6 +11,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { AuthErrorMessage } from '../../common/decorators/auth-error-message.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import type { RequestUser } from '../../common/types/request-user.type';
@@ -56,12 +57,14 @@ export class ProductsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
+  @AuthErrorMessage('상품을 등록하려면 인증이 필요합니다.')
   create(@Body() dto: CreateProductDto, @CurrentUser() user: RequestUser) {
     return this.createProductService.create(dto, user);
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch(':productId')
+  @AuthErrorMessage('상품을 수정하려면 인증이 필요합니다.')
   update(
     @Param('productId') productId: string,
     @Body() dto: UpdateProductDto,
@@ -73,6 +76,7 @@ export class ProductsController {
   @UseGuards(JwtAuthGuard)
   @Delete(':productId')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @AuthErrorMessage('상품을 삭제하려면 인증이 필요합니다.')
   delete(
     @Param('productId') productId: string,
     @CurrentUser() user: RequestUser,
@@ -82,6 +86,7 @@ export class ProductsController {
 
   @UseGuards(JwtAuthGuard)
   @Patch(':productId/status')
+  @AuthErrorMessage('상품 상태를 변경하려면 인증이 필요합니다.')
   updateStatus(
     @Param('productId') productId: string,
     @Body() dto: UpdateProductStatusDto,

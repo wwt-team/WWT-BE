@@ -23,7 +23,7 @@ export class RefreshTokenService {
         throw new ApiException(
           HttpStatus.UNAUTHORIZED,
           ERROR_CODES.INVALID_REFRESH_TOKEN,
-          'refreshToken이 올바르지 않습니다.',
+          '로그인 정보가 올바르지 않습니다. 다시 시도해주세요.',
         );
       }
 
@@ -31,7 +31,7 @@ export class RefreshTokenService {
         throw new ApiException(
           HttpStatus.UNAUTHORIZED,
           ERROR_CODES.EXPIRED_REFRESH_TOKEN,
-          'refreshToken이 만료되었습니다.',
+          '로그인 시간이 만료되었습니다. 다시 로그인해주세요.',
         );
       }
 
@@ -39,7 +39,7 @@ export class RefreshTokenService {
       throw new ApiException(
         HttpStatus.UNAUTHORIZED,
         ERROR_CODES.REFRESH_TOKEN_REUSE_DETECTED,
-        '폐기된 refreshToken입니다. 다시 로그인해주세요.',
+        '로그인이 만료되었습니다. 다시 로그인해주세요.',
       );
     }
 
@@ -64,14 +64,14 @@ export class RefreshTokenService {
         throw new ApiException(
           HttpStatus.UNAUTHORIZED,
           ERROR_CODES.EXPIRED_REFRESH_TOKEN,
-          'refreshToken이 만료되었습니다.',
+          '로그인 시간이 만료되었습니다. 다시 로그인해주세요.',
         );
       }
 
       throw new ApiException(
         HttpStatus.UNAUTHORIZED,
         ERROR_CODES.INVALID_REFRESH_TOKEN,
-        'refreshToken이 올바르지 않습니다.',
+        '로그인 정보가 올바르지 않습니다. 다시 시도해주세요.',
       );
     }
 
@@ -79,7 +79,7 @@ export class RefreshTokenService {
       throw new ApiException(
         HttpStatus.UNAUTHORIZED,
         ERROR_CODES.INVALID_REFRESH_TOKEN,
-        'refreshToken이 올바르지 않습니다.',
+        '로그인 정보가 올바르지 않습니다. 다시 시도해주세요.',
       );
     }
 

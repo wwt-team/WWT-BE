@@ -1,4 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import { AuthErrorMessage } from '../../common/decorators/auth-error-message.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import type { RequestUser } from '../../common/types/request-user.type';
@@ -55,6 +56,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
+  @AuthErrorMessage('로그아웃하려면 인증이 필요합니다.')
   async logout(@Body() dto: LogoutDto, @CurrentUser() user: RequestUser) {
     await this.logoutService.logout(dto, user);
   }

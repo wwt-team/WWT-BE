@@ -8,6 +8,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { AuthErrorMessage } from '../../common/decorators/auth-error-message.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import type { RequestUser } from '../../common/types/request-user.type';
@@ -32,6 +33,7 @@ export class TradeRequestsController {
 
   @UseGuards(JwtAuthGuard)
   @Post('products/:productId/trade-requests')
+  @AuthErrorMessage('거래 요청을 등록하려면 인증이 필요합니다.')
   create(
     @Param('productId') productId: string,
     @Body() dto: CreateTradeRequestDto,
@@ -42,6 +44,7 @@ export class TradeRequestsController {
 
   @UseGuards(JwtAuthGuard)
   @Get('products/:productId/trade-requests')
+  @AuthErrorMessage('거래 요청 목록을 조회하려면 인증이 필요합니다.')
   listByProduct(
     @Param('productId') productId: string,
     @CurrentUser() user: RequestUser,
@@ -52,6 +55,7 @@ export class TradeRequestsController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('trade-requests/:tradeRequestId/accept')
+  @AuthErrorMessage('거래 요청을 수락하려면 인증이 필요합니다.')
   accept(
     @Param('tradeRequestId') tradeRequestId: string,
     @CurrentUser() user: RequestUser,
@@ -61,6 +65,7 @@ export class TradeRequestsController {
 
   @UseGuards(JwtAuthGuard)
   @Patch('trade-requests/:tradeRequestId/reject')
+  @AuthErrorMessage('거래 요청을 거절하려면 인증이 필요합니다.')
   reject(
     @Param('tradeRequestId') tradeRequestId: string,
     @CurrentUser() user: RequestUser,
@@ -70,6 +75,7 @@ export class TradeRequestsController {
 
   @UseGuards(JwtAuthGuard)
   @Get('trade-requests/me')
+  @AuthErrorMessage('내 거래 요청 목록을 조회하려면 인증이 필요합니다.')
   myList(
     @CurrentUser() user: RequestUser,
     @Query() query: MyTradeRequestsQueryDto,

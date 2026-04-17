@@ -1,4 +1,5 @@
 import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { AuthErrorMessage } from '../../common/decorators/auth-error-message.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import type { RequestUser } from '../../common/types/request-user.type';
@@ -15,12 +16,14 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Get('me')
+  @AuthErrorMessage('내 정보를 조회하려면 인증이 필요합니다.')
   getMe(@CurrentUser() user: RequestUser) {
     return this.meService.getMe(user);
   }
 
   @UseGuards(JwtAuthGuard)
   @Get('me/products')
+  @AuthErrorMessage('내 상품 목록을 조회하려면 인증이 필요합니다.')
   getMyProducts(
     @CurrentUser() user: RequestUser,
     @Query() query: MyProductsQueryDto,

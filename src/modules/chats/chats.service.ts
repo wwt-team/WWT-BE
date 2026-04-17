@@ -36,12 +36,18 @@ export class ChatsService {
   }
 
   assertParticipant(room: ChatRoom, userId: string, message: string) {
-    if (String(room.buyerId) !== String(userId) && String(room.sellerId) !== String(userId)) {
+    if (
+      String(room.buyerId) !== String(userId) &&
+      String(room.sellerId) !== String(userId)
+    ) {
       throw new ApiException(HttpStatus.FORBIDDEN, ERROR_CODES.FORBIDDEN, message);
     }
   }
 
-  async findMessageOrThrow(messageId: string, relations?: FindOptionsRelations<ChatMessage>) {
+  async findMessageOrThrow(
+    messageId: string,
+    relations?: FindOptionsRelations<ChatMessage>,
+  ) {
     const message = await this.chatMessagesRepository.findOne({
       where: { id: String(messageId) },
       relations,
