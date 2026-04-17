@@ -2,7 +2,6 @@ import { HttpStatus, ValidationPipe, type ValidationError } from '@nestjs/common
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ERROR_CODES, type ErrorCode } from './common/constants/error-codes';
-import { DEFAULT_ERROR_MESSAGES } from './common/constants/error-messages';
 import { ApiException } from './common/exceptions/api.exception';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
@@ -80,7 +79,7 @@ async function bootstrap() {
         return new ApiException(
           HttpStatus.BAD_REQUEST,
           ERROR_CODES.INVALID_LOGIN_EMAIL,
-          DEFAULT_ERROR_MESSAGES[ERROR_CODES.INVALID_LOGIN_EMAIL],
+          '요청값이 올바르지 않습니다.',
         );
       },
     }),

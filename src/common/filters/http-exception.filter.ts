@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { ERROR_CODES } from '../constants/error-codes';
-import { DEFAULT_ERROR_MESSAGES } from '../constants/error-messages';
 import type { ApiExceptionResponse } from '../exceptions/api.exception';
 
 @Catch()
@@ -41,7 +40,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     return response.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       code: ERROR_CODES.INTERNAL_SERVER_ERROR,
-      message: DEFAULT_ERROR_MESSAGES[ERROR_CODES.INTERNAL_SERVER_ERROR],
+      message: '서버 내부 오류가 발생했습니다.',
       timestamp: new Date().toISOString(),
       path: request.originalUrl,
     });
@@ -91,6 +90,6 @@ export class HttpExceptionFilter implements ExceptionFilter {
       return exceptionResponse.message;
     }
 
-    return DEFAULT_ERROR_MESSAGES[ERROR_CODES.INTERNAL_SERVER_ERROR];
+    return '서버 내부 오류가 발생했습니다.';
   }
 }
