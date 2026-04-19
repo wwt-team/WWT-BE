@@ -284,4 +284,4 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run e2e tests
-        run: pnpm test:e2e -- --runInBand
+        run: pnpm test:e2e --runInBand
