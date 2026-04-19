@@ -19,6 +19,8 @@
 
 - 워크플로우: [cd.yml](../.github/workflows/cd.yml)
 - 배포 스크립트: [deploy.sh](../scripts/deploy.sh)
+- 수동 롤백 워크플로우: [rollback.yml](../.github/workflows/rollback.yml)
+- 수동 롤백 스크립트: [rollback.sh](../scripts/rollback.sh)
 
 ## self-hosted runner 설치 시 주의
 
@@ -36,3 +38,27 @@
 ## 배포 트리거
 
 - `main` 브랜치에서 `CI`가 성공하면 `CD`가 자동 실행된다.
+
+## 롤백
+
+### 자동 롤백
+
+- `deploy.sh`는 배포 시작 전에 현재 commit SHA를 기억한다.
+- `git pull`, `pnpm install`, `pnpm build`, `pm2 restart` 중 하나라도 실패하면:
+  1. 배포 전 commit으로 `git reset --hard`
+  2. `pnpm install --frozen-lockfile`
+  3. `pnpm build`
+  4. `pm2 restart wwt-be`
+  5. `pm2 save`
+
+### 수동 롤백
+
+GitHub Actions에서 `Rollback` 워크플로우를 직접 실행할 수 있다.
+
+- `target_commit`을 비워두면 이전 성공 배포 commit으로 되돌린다.
+- `target_commit`에 SHA를 넣으면 해당 commit으로 되돌린다.
+
+배포 기록 파일:
+
+- `/var/www/wwt-be/.deploy/last_successful_commit`
+- `/var/www/wwt-be/.deploy/previous_successful_commit`

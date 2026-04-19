@@ -1,0 +1,23 @@
+name: Rollback
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_commit:
+        description: 'Rollback target commit SHA. Leave empty to use the previous successful deploy commit.'
+        required: false
+        type: string
+
+jobs:
+  rollback:
+    runs-on:
+      - self-hosted
+      - linux
+      - x64
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run rollback
+        run: bash ./scripts/rollback.sh "${{ inputs.target_commit }}"
