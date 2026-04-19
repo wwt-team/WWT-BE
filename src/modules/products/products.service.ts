@@ -1,6 +1,6 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { FindOptionsRelations, Repository } from 'typeorm';
+import { FindOptionsRelations, IsNull, Repository } from 'typeorm';
 import { ERROR_CODES } from '../../common/constants/error-codes';
 import { ApiException } from '../../common/exceptions/api.exception';
 import { Product, ProductStatus } from './entities/product.entity';
@@ -12,7 +12,23 @@ export class ProductsService {
     private readonly productsRepository: Repository<Product>,
   ) {}
 
-  create(input: Partial<Product>) {
+  async create(input: Partial<Product>) {
+    const duplicateProduct = await this.productsRepository.findOne({
+      where: {
+        sellerId: String(input.sellerId),
+        title: input.title,
+        description: input.description ?? IsNull(),
+      },
+    });
+
+    if (duplicateProduct) {
+      throw new ApiException(
+        HttpStatus.CONFLICT,
+        ERROR_CODES.DUPLICATE_PRODUCT,
+        '동일한 상품이 이미 등록되어 있습니다.',
+      );
+    }
+
     const product = this.productsRepository.create(input);
     return this.productsRepository.save(product);
   }

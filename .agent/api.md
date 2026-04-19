@@ -79,6 +79,7 @@ RFR은 refreshToken을 한 번 사용할 때마다 새 refreshToken으로 교체
 | 상품 등록        | `MISSING_PRODUCT_TITLE`           | 상품 제목은 필수입니다.                         |
 | 상품 수정        | `FORBIDDEN`                       | 상품을 수정할 권한이 없습니다.                  |
 | 상품 삭제        | `FORBIDDEN`                       | 상품을 삭제할 권한이 없습니다.                  |
+| 상품 등록        | `DUPLICATE_PRODUCT`               | 동일한 상품이 이미 등록되어 있습니다.            |
 | 거래 요청        | `DUPLICATE_PENDING_TRADE_REQUEST` | 이미 대기 중인 거래 요청이 있습니다.            |
 | 거래 수락        | `INVALID_TRADE_REQUEST_STATUS`    | PENDING 상태의 거래 요청만 수락할 수 있습니다.  |
 | 채팅 메시지 등록 | `INVALID_CHAT_MESSAGE`            | 메시지 내용이 올바르지 않습니다.                |
@@ -124,12 +125,14 @@ RFR은 refreshToken을 한 번 사용할 때마다 새 refreshToken으로 교체
 |       `401` | `EXPIRED_REFRESH_TOKEN`             | refreshToken이 만료되었습니다.                               |
 |       `401` | `REFRESH_TOKEN_REUSE_DETECTED`      | 폐기된 refreshToken입니다. 다시 로그인해주세요.              |
 |       `403` | `FORBIDDEN`                         | 접근 권한이 없습니다.                                        |
+|       `404` | `NOT_FOUND`                         | 요청한 경로를 찾을 수 없습니다.                              |
 |       `404` | `USER_NOT_FOUND`                    | 사용자를 찾을 수 없습니다.                                   |
 |       `404` | `PRODUCT_NOT_FOUND`                 | 상품을 찾을 수 없습니다.                                     |
 |       `404` | `TRADE_REQUEST_NOT_FOUND`           | 거래 요청을 찾을 수 없습니다.                                |
 |       `404` | `CHAT_ROOM_NOT_FOUND`               | 채팅방을 찾을 수 없습니다.                                   |
 |       `404` | `CHAT_MESSAGE_NOT_FOUND`            | 메시지를 찾을 수 없습니다.                                   |
 |       `409` | `EMAIL_ALREADY_EXISTS`              | 이미 가입된 이메일입니다.                                    |
+|       `409` | `DUPLICATE_PRODUCT`                 | 동일한 상품이 이미 등록되어 있습니다.                         |
 |       `409` | `DUPLICATE_PENDING_TRADE_REQUEST`   | 이미 대기 중인 거래 요청이 있습니다.                         |
 |       `409` | `SELF_TRADE_NOT_ALLOWED`            | 자신의 상품에는 거래 요청할 수 없습니다.                     |
 |       `409` | `PRODUCT_ALREADY_SOLD`              | 판매 완료된 상품입니다.                                      |
@@ -244,6 +247,7 @@ Nginx, 로드밸런서, API Gateway 같은 게이트웨이 계층에서 upstream
 | `POST /api/products`                     | 제목 누락                  | `MISSING_PRODUCT_TITLE`      | 상품 제목은 필수입니다.                                    |
 | `POST /api/products`                     | 가격 오류                  | `INVALID_PRODUCT_PRICE`      | 상품 가격은 0 이상의 정수여야 합니다.                      |
 | `POST /api/products`                     | 이미지 URL 오류            | `INVALID_PRODUCT_IMAGE_URLS` | 상품 이미지 형식이 올바르지 않습니다.                      |
+| `POST /api/products`                     | 동일 판매자 동일 제목/설명 중복 등록 | `DUPLICATE_PRODUCT`          | 동일한 상품이 이미 등록되어 있습니다.                      |
 | `PATCH /api/products/{productId}`        | accessToken 없음 또는 만료 | `UNAUTHORIZED`               | 상품을 수정하려면 인증이 필요합니다.                       |
 | `PATCH /api/products/{productId}`        | 판매자 아님                | `FORBIDDEN`                  | 상품을 수정할 권한이 없습니다.                             |
 | `PATCH /api/products/{productId}`        | 상품 없음                  | `PRODUCT_NOT_FOUND`          | 상품을 찾을 수 없습니다.                                   |

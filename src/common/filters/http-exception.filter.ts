@@ -31,7 +31,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       return response.status(statusCode).json({
         statusCode,
         code: this.defaultCode(statusCode),
-        message: this.defaultMessage(exceptionResponse),
+        message: this.defaultMessage(exceptionResponse, statusCode),
         timestamp: new Date().toISOString(),
         path: request.originalUrl,
       });
@@ -70,13 +70,41 @@ export class HttpExceptionFilter implements ExceptionFilter {
     }
 
     if (statusCode === HttpStatus.NOT_FOUND) {
-      return ERROR_CODES.PRODUCT_NOT_FOUND;
+      return ERROR_CODES.NOT_FOUND;
+    }
+
+    if (statusCode === HttpStatus.BAD_GATEWAY) {
+      return ERROR_CODES.BAD_GATEWAY;
+    }
+
+    if (statusCode === HttpStatus.SERVICE_UNAVAILABLE) {
+      return ERROR_CODES.SERVICE_UNAVAILABLE;
+    }
+
+    if (statusCode === HttpStatus.GATEWAY_TIMEOUT) {
+      return ERROR_CODES.GATEWAY_TIMEOUT;
     }
 
     return ERROR_CODES.INTERNAL_SERVER_ERROR;
   }
 
-  private defaultMessage(exceptionResponse: string | object) {
+  private defaultMessage(exceptionResponse: string | object, statusCode?: number) {
+    if (statusCode === HttpStatus.NOT_FOUND) {
+      return '요청한 경로를 찾을 수 없습니다.';
+    }
+
+    if (statusCode === HttpStatus.BAD_GATEWAY) {
+      return '게이트웨이에서 잘못된 응답을 받았습니다.';
+    }
+
+    if (statusCode === HttpStatus.SERVICE_UNAVAILABLE) {
+      return '일시적으로 서비스를 사용할 수 없습니다.';
+    }
+
+    if (statusCode === HttpStatus.GATEWAY_TIMEOUT) {
+      return '게이트웨이 응답 시간이 초과되었습니다.';
+    }
+
     if (typeof exceptionResponse === 'string') {
       return exceptionResponse;
     }

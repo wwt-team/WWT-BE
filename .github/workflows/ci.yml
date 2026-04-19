@@ -1,0 +1,287 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: npx tsc --noEmit --incremental false --pretty false
+
+      - name: Build
+        run: pnpm build
+
+  app-test:
+    runs-on: ubuntu-latest
+    needs: quality
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run app tests
+        run: |
+          FILES=$(find src -maxdepth 1 -name "*.spec.ts" 2>/dev/null)
+          if [ -z "$FILES" ]; then
+            echo "No app tests found. Skipping."
+            exit 0
+          fi
+          pnpm test -- --runInBand --runTestsByPath $FILES
+
+  common-test:
+    runs-on: ubuntu-latest
+    needs: quality
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run common tests
+        run: |
+          FILES=$(find src/common -name "*.spec.ts" 2>/dev/null)
+          if [ -z "$FILES" ]; then
+            echo "No common tests found. Skipping."
+            exit 0
+          fi
+          pnpm test -- --runInBand --runTestsByPath $FILES
+
+  auth-test:
+    runs-on: ubuntu-latest
+    needs: quality
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run auth tests
+        run: |
+          FILES=$(find src/modules/auth -name "*.spec.ts" 2>/dev/null)
+          if [ -z "$FILES" ]; then
+            echo "No auth tests found. Skipping."
+            exit 0
+          fi
+          pnpm test -- --runInBand --runTestsByPath $FILES
+
+  users-test:
+    runs-on: ubuntu-latest
+    needs: quality
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run users tests
+        run: |
+          FILES=$(find src/modules/users -name "*.spec.ts" 2>/dev/null)
+          if [ -z "$FILES" ]; then
+            echo "No users tests found. Skipping."
+            exit 0
+          fi
+          pnpm test -- --runInBand --runTestsByPath $FILES
+
+  products-test:
+    runs-on: ubuntu-latest
+    needs: quality
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run products tests
+        run: |
+          FILES=$(find src/modules/products -name "*.spec.ts" 2>/dev/null)
+          if [ -z "$FILES" ]; then
+            echo "No products tests found. Skipping."
+            exit 0
+          fi
+          pnpm test -- --runInBand --runTestsByPath $FILES
+
+  trade-requests-test:
+    runs-on: ubuntu-latest
+    needs: quality
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run trade requests tests
+        run: |
+          FILES=$(find src/modules/trade-requests -name "*.spec.ts" 2>/dev/null)
+          if [ -z "$FILES" ]; then
+            echo "No trade requests tests found. Skipping."
+            exit 0
+          fi
+          pnpm test -- --runInBand --runTestsByPath $FILES
+
+  chat-test:
+    runs-on: ubuntu-latest
+    needs: quality
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run chat tests
+        run: |
+          FILES=$(find src/modules/chats -name "*.spec.ts" 2>/dev/null)
+          if [ -z "$FILES" ]; then
+            echo "No chat tests found. Skipping."
+            exit 0
+          fi
+          pnpm test -- --runInBand --runTestsByPath $FILES
+
+  e2e-test:
+    runs-on: ubuntu-latest
+    needs:
+      - quality
+      - app-test
+      - common-test
+      - auth-test
+      - users-test
+      - products-test
+      - trade-requests-test
+      - chat-test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run e2e tests
+        run: pnpm test:e2e -- --runInBand
