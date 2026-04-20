@@ -6,6 +6,7 @@ import { ProductDetailService } from '../src/modules/products/features/detail/pr
 import { ProductListService } from '../src/modules/products/features/list/product-list.service';
 import { ProductSearchService } from '../src/modules/products/features/search/product-search.service';
 import { UpdateProductStatusService } from '../src/modules/products/features/status/update-product-status.service';
+import { UploadProductImagesService } from '../src/modules/products/features/update/upload-product-images.service';
 import { UpdateProductImagesService } from '../src/modules/products/features/update/update-product-images.service';
 import { UpdateProductService } from '../src/modules/products/features/update/update-product.service';
 import { ProductsController } from '../src/modules/products/products.controller';
@@ -20,6 +21,7 @@ describe('ProductsController (e2e)', () => {
   const createProductService = { create: jest.fn() };
   const updateProductService = { update: jest.fn() };
   const updateProductImagesService = { updateImages: jest.fn() };
+  const uploadProductImagesService = { upload: jest.fn() };
   const deleteProductService = { delete: jest.fn() };
   const updateProductStatusService = { updateStatus: jest.fn() };
 
@@ -35,6 +37,10 @@ describe('ProductsController (e2e)', () => {
         {
           provide: UpdateProductImagesService,
           useValue: updateProductImagesService,
+        },
+        {
+          provide: UploadProductImagesService,
+          useValue: uploadProductImagesService,
         },
         { provide: DeleteProductService, useValue: deleteProductService },
         {
@@ -114,6 +120,28 @@ describe('ProductsController (e2e)', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body.code).toBe('INVALID_PRODUCT_STATUS');
+  });
+
+  it('uploads product images', async () => {
+    uploadProductImagesService.upload.mockResolvedValue({
+      id: 1,
+      imageUrls: ['https://example.com/product-uploaded.jpg'],
+      updatedAt: '2026-04-20T00:00:00.000Z',
+    });
+
+    const response = await request(app.getHttpServer())
+      .post('/api/products/product-1/images')
+      .set('x-test-user-id', 'seller-1')
+      .set('x-test-user-email', 'seller@example.com')
+      .attach('files', Buffer.from('product'), {
+        filename: 'product.png',
+        contentType: 'image/png',
+      })
+      .expect(HttpStatus.CREATED);
+
+    expect(response.body.imageUrls).toEqual([
+      'https://example.com/product-uploaded.jpg',
+    ]);
   });
 
   it('validates product image urls on image update', async () => {

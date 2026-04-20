@@ -2,6 +2,7 @@ import { HttpStatus, type INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { UsersController } from '../src/modules/users/users.controller';
 import { MeService } from '../src/modules/users/features/me/me.service';
+import { UploadProfileImageService } from '../src/modules/users/features/me/upload-profile-image.service';
 import { UpdateMeService } from '../src/modules/users/features/me/update-me.service';
 import { MyProductsService } from '../src/modules/users/features/my-products/my-products.service';
 import { createE2EApp } from './support/create-e2e-app';
@@ -11,6 +12,7 @@ describe('UsersController (e2e)', () => {
 
   const meService = { getMe: jest.fn() };
   const updateMeService = { updateMe: jest.fn() };
+  const uploadProfileImageService = { upload: jest.fn() };
   const myProductsService = { getMyProducts: jest.fn() };
 
   beforeAll(async () => {
@@ -19,6 +21,10 @@ describe('UsersController (e2e)', () => {
       providers: [
         { provide: MeService, useValue: meService },
         { provide: UpdateMeService, useValue: updateMeService },
+        {
+          provide: UploadProfileImageService,
+          useValue: uploadProfileImageService,
+        },
         { provide: MyProductsService, useValue: myProductsService },
       ],
     });
@@ -89,6 +95,31 @@ describe('UsersController (e2e)', () => {
       .expect(HttpStatus.OK);
 
     expect(response.body.profileImageUrl).toBe('https://example.com/profile.png');
+  });
+
+  it('uploads my profile image', async () => {
+    uploadProfileImageService.upload.mockResolvedValue({
+      id: 1,
+      email: 'user@example.com',
+      nickname: 'tester',
+      emailVerifiedAt: null,
+      profileImageUrl: 'https://example.com/profile-uploaded.png',
+      createdAt: '2026-04-19T00:00:00.000Z',
+    });
+
+    const response = await request(app.getHttpServer())
+      .post('/api/users/me/profile-image')
+      .set('x-test-user-id', 'user-1')
+      .set('x-test-user-email', 'user@example.com')
+      .attach('file', Buffer.from('profile'), {
+        filename: 'profile.png',
+        contentType: 'image/png',
+      })
+      .expect(HttpStatus.CREATED);
+
+    expect(response.body.profileImageUrl).toBe(
+      'https://example.com/profile-uploaded.png',
+    );
   });
 
   it('validates my products query', async () => {

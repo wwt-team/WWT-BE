@@ -29,5 +29,5 @@ export class CreateProductService {
       createdAt: product.createdAt,
       updatedAt: product.updatedAt,
     };
-  }
+  } 
 }

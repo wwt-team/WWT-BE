@@ -1,6 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { HTTP_CODE_METADATA } from '@nestjs/common/constants';
 import { AUTH_ERROR_MESSAGE_KEY } from '../../common/decorators/auth-error-message.decorator';
+import type { UploadedFile } from '../../common/types/uploaded-file.type';
 import { ProductsController } from './products.controller';
 
 describe('ProductsController', () => {
@@ -10,6 +11,7 @@ describe('ProductsController', () => {
   const createProductService = { create: jest.fn() };
   const updateProductService = { update: jest.fn() };
   const updateProductImagesService = { updateImages: jest.fn() };
+  const uploadProductImagesService = { upload: jest.fn() };
   const deleteProductService = { delete: jest.fn() };
   const updateProductStatusService = { updateStatus: jest.fn() };
 
@@ -20,6 +22,7 @@ describe('ProductsController', () => {
     createProductService as never,
     updateProductService as never,
     updateProductImagesService as never,
+    uploadProductImagesService as never,
     deleteProductService as never,
     updateProductStatusService as never,
   );
@@ -53,10 +56,25 @@ describe('ProductsController', () => {
   });
 
   it('delegates update request', () => {
-    const dto = { title: '수정된 상품' };
+    const dto = { title: '수정 상품' };
     const user = { id: '1', email: 'test@example.com' };
     controller.update('1', dto as never, user);
     expect(updateProductService.update).toHaveBeenCalledWith('1', dto, user);
+  });
+
+  it('delegates product image upload request', () => {
+    const files = [
+      { originalname: 'product-1.png', mimetype: 'image/png' },
+    ] as UploadedFile[];
+    const user = { id: '1', email: 'test@example.com' };
+
+    controller.uploadImages('1', files, user);
+
+    expect(uploadProductImagesService.upload).toHaveBeenCalledWith(
+      '1',
+      files,
+      user,
+    );
   });
 
   it('delegates product image update request', () => {
@@ -99,6 +117,12 @@ describe('ProductsController', () => {
     ).toBeDefined();
     expect(
       Reflect.getMetadata(AUTH_ERROR_MESSAGE_KEY, ProductsController.prototype.update),
+    ).toBeDefined();
+    expect(
+      Reflect.getMetadata(
+        AUTH_ERROR_MESSAGE_KEY,
+        ProductsController.prototype.uploadImages,
+      ),
     ).toBeDefined();
     expect(
       Reflect.getMetadata(

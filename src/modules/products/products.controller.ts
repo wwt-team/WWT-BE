@@ -9,12 +9,16 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { AuthErrorMessage } from '../../common/decorators/auth-error-message.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import type { RequestUser } from '../../common/types/request-user.type';
+import type { UploadedFile } from '../../common/types/uploaded-file.type';
 import { CreateProductDto } from './features/create/dto/create-product.dto';
 import { CreateProductService } from './features/create/create-product.service';
 import { DeleteProductService } from './features/delete/delete-product.service';
@@ -27,6 +31,7 @@ import { UpdateProductStatusDto } from './features/status/dto/update-product-sta
 import { UpdateProductStatusService } from './features/status/update-product-status.service';
 import { UpdateProductImagesDto } from './features/update/dto/update-product-images.dto';
 import { UpdateProductDto } from './features/update/dto/update-product.dto';
+import { UploadProductImagesService } from './features/update/upload-product-images.service';
 import { UpdateProductImagesService } from './features/update/update-product-images.service';
 import { UpdateProductService } from './features/update/update-product.service';
 
@@ -39,6 +44,7 @@ export class ProductsController {
     private readonly createProductService: CreateProductService,
     private readonly updateProductService: UpdateProductService,
     private readonly updateProductImagesService: UpdateProductImagesService,
+    private readonly uploadProductImagesService: UploadProductImagesService,
     private readonly deleteProductService: DeleteProductService,
     private readonly updateProductStatusService: UpdateProductStatusService,
   ) {}
@@ -74,6 +80,18 @@ export class ProductsController {
     @CurrentUser() user: RequestUser,
   ) {
     return this.updateProductService.update(productId, dto, user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':productId/images')
+  @UseInterceptors(FilesInterceptor('files', 10))
+  @AuthErrorMessage('상품 이미지를 업로드하려면 인증이 필요합니다.')
+  uploadImages(
+    @Param('productId') productId: string,
+    @UploadedFiles() files: UploadedFile[] | undefined,
+    @CurrentUser() user: RequestUser,
+  ) {
+    return this.uploadProductImagesService.upload(productId, files, user);
   }
 
   @UseGuards(JwtAuthGuard)

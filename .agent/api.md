@@ -232,6 +232,9 @@ Nginx, 로드밸런서, API Gateway 같은 게이트웨이 계층에서 upstream
 | `GET /api/users/me` | accessToken 없음 또는 만료 | `UNAUTHORIZED` | 내 정보를 조회하려면 인증이 필요합니다. |
 | `PATCH /api/users/me` | accessToken 없음 또는 만료 | `UNAUTHORIZED` | 내 정보를 수정하려면 인증이 필요합니다. |
 | `PATCH /api/users/me` | 프로필 이미지 URL 형식 오류 | `INVALID_PROFILE_IMAGE_URL` | 프로필 이미지 URL 형식이 올바르지 않습니다. |
+| `POST /api/users/me/profile-image` | accessToken 없음 또는 만료 | `UNAUTHORIZED` | 프로필 이미지를 업로드하려면 인증이 필요합니다. |
+| `POST /api/users/me/profile-image` | 파일 누락 | `MISSING_PROFILE_IMAGE_FILE` | 프로필 이미지를 업로드해주세요. |
+| `POST /api/users/me/profile-image` | 이미지가 아닌 파일 업로드 | `INVALID_PROFILE_IMAGE_FILE` | 이미지 파일만 업로드할 수 있습니다. |
 | `GET /api/users/me/products` | accessToken 없음 또는 만료 | `UNAUTHORIZED` | 내 상품 목록을 조회하려면 인증이 필요합니다. |
 
 #### 상품
@@ -253,6 +256,10 @@ Nginx, 로드밸런서, API Gateway 같은 게이트웨이 계층에서 upstream
 | `PATCH /api/products/{productId}`        | accessToken 없음 또는 만료 | `UNAUTHORIZED`               | 상품을 수정하려면 인증이 필요합니다.                       |
 | `PATCH /api/products/{productId}`        | 판매자 아님                | `FORBIDDEN`                  | 상품을 수정할 권한이 없습니다.                             |
 | `PATCH /api/products/{productId}`        | 상품 없음                  | `PRODUCT_NOT_FOUND`          | 상품을 찾을 수 없습니다.                                   |
+| `POST /api/products/{productId}/images`  | accessToken 없음 또는 만료 | `UNAUTHORIZED`               | 상품 이미지를 업로드하려면 인증이 필요합니다.              |
+| `POST /api/products/{productId}/images`  | 파일 누락                  | `MISSING_PRODUCT_IMAGE_FILES` | 상품 이미지를 업로드해주세요.                              |
+| `POST /api/products/{productId}/images`  | 이미지가 아닌 파일 업로드  | `INVALID_PRODUCT_IMAGE_FILE` | 이미지 파일만 업로드할 수 있습니다.                        |
+| `POST /api/products/{productId}/images`  | 이미지 10장 초과           | `PRODUCT_IMAGE_LIMIT_EXCEEDED` | 상품 이미지는 최대 10장까지 업로드할 수 있습니다.        |
 | `PATCH /api/products/{productId}/images` | accessToken 없음 또는 만료 | `UNAUTHORIZED`               | 상품 이미지를 수정하려면 인증이 필요합니다.                |
 | `PATCH /api/products/{productId}/images` | 판매자 아님                | `FORBIDDEN`                  | 상품 이미지를 수정할 권한이 없습니다.                      |
 | `PATCH /api/products/{productId}/images` | 상품 없음                  | `PRODUCT_NOT_FOUND`          | 상품을 찾을 수 없습니다.                                   |
