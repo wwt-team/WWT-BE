@@ -43,18 +43,28 @@ describe('AuthController (e2e)', () => {
 
   it('signup email-code request succeeds', async () => {
     emailVerificationService.requestEmailCode.mockResolvedValue({
-      email: 'test@example.com',
+      email: 'student@dsm.hs.kr',
     });
 
     const response = await request(app.getHttpServer())
       .post('/api/auth/signup/email-code')
-      .send({ email: 'test@example.com' })
+      .send({ email: 'student@dsm.hs.kr' })
       .expect(HttpStatus.CREATED);
 
-    expect(response.body).toEqual({ email: 'test@example.com' });
+    expect(response.body).toEqual({ email: 'student@dsm.hs.kr' });
     expect(emailVerificationService.requestEmailCode).toHaveBeenCalledWith({
-      email: 'test@example.com',
+      email: 'student@dsm.hs.kr',
     });
+  });
+
+  it('signup email-code request rejects non-dsm email', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/api/auth/signup/email-code')
+      .send({ email: 'student@gmail.com' })
+      .expect(HttpStatus.BAD_REQUEST);
+
+    expect(response.body.code).toBe('INVALID_EMAIL_CODE_REQUEST_EMAIL');
+    expect(response.body.message).toBe('학교 이메일만 회원가입이 가능합니다.');
   });
 
   it('login succeeds', async () => {
@@ -65,11 +75,21 @@ describe('AuthController (e2e)', () => {
 
     const response = await request(app.getHttpServer())
       .post('/api/auth/login')
-      .send({ email: 'test@example.com', password: 'password123' })
+      .send({ email: 'student@dsm.hs.kr', password: 'password123' })
       .expect(HttpStatus.CREATED);
 
     expect(response.body.accessToken).toBe('access-token');
     expect(response.body.refreshToken).toBe('refresh-token');
+  });
+
+  it('login rejects non-dsm email', async () => {
+    const response = await request(app.getHttpServer())
+      .post('/api/auth/login')
+      .send({ email: 'student@naver.com', password: 'password123' })
+      .expect(HttpStatus.BAD_REQUEST);
+
+    expect(response.body.code).toBe('INVALID_LOGIN_EMAIL');
+    expect(response.body.message).toBe('학교 이메일만 회원가입이 가능합니다.');
   });
 
   it('refresh validates token input', async () => {

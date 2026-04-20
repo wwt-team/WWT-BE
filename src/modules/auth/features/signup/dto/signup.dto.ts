@@ -1,7 +1,15 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  Matches,
+  MinLength,
+} from 'class-validator';
+import { SCHOOL_EMAIL_REGEX } from '../../../../../common/constants/school-email';
 
 export class SignupDto {
   @IsEmail({}, { message: 'INVALID_SIGNUP_EMAIL' })
+  @Matches(SCHOOL_EMAIL_REGEX, { message: 'INVALID_SIGNUP_EMAIL' })
   email!: string;
 
   @IsString()

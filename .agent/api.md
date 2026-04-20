@@ -57,7 +57,7 @@ RFR은 refreshToken을 한 번 사용할 때마다 새 refreshToken으로 교체
 {
   "statusCode": 400,
   "code": "INVALID_SIGNUP_EMAIL",
-  "message": "이메일 형식이 올바르지 않습니다.",
+  "message": "학교 이메일만 회원가입이 가능합니다.",
   "timestamp": "2026-04-15T12:00:00.000Z",
   "path": "/api/auth/signup"
 }
@@ -73,7 +73,7 @@ RFR은 refreshToken을 한 번 사용할 때마다 새 refreshToken으로 교체
 
 | 기능             | code                              | message 예시                                    |
 | ---------------- | --------------------------------- | ----------------------------------------------- |
-| 회원가입         | `INVALID_SIGNUP_EMAIL`            | 이메일 형식이 올바르지 않습니다.                |
+| 회원가입         | `INVALID_SIGNUP_EMAIL`            | 학교 이메일만 회원가입이 가능합니다.            |
 | 로그인           | `INVALID_CREDENTIALS`             | 이메일 또는 비밀번호가 올바르지 않습니다.       |
 | 토큰 재발급      | `REFRESH_TOKEN_REUSE_DETECTED`    | 폐기된 refreshToken입니다. 다시 로그인해주세요. |
 | 상품 등록        | `MISSING_PRODUCT_TITLE`           | 상품 제목은 필수입니다.                         |
@@ -91,11 +91,11 @@ RFR은 refreshToken을 한 번 사용할 때마다 새 refreshToken으로 교체
 
 | HTTP Status | code                                | message 예시                                                 |
 | ----------: | ----------------------------------- | ------------------------------------------------------------ |
-|       `400` | `INVALID_EMAIL_CODE_REQUEST_EMAIL`  | 이메일 형식이 올바르지 않습니다.                             |
-|       `400` | `INVALID_SIGNUP_EMAIL`              | 이메일 형식이 올바르지 않습니다.                             |
+|       `400` | `INVALID_EMAIL_CODE_REQUEST_EMAIL`  | 학교 이메일만 회원가입이 가능합니다.                         |
+|       `400` | `INVALID_SIGNUP_EMAIL`              | 학교 이메일만 회원가입이 가능합니다.                         |
 |       `400` | `INVALID_SIGNUP_PASSWORD`           | 비밀번호는 최소 8자 이상이어야 합니다.                       |
 |       `400` | `INVALID_SIGNUP_NICKNAME`           | 닉네임은 필수입니다.                                         |
-|       `400` | `INVALID_LOGIN_EMAIL`               | 이메일 형식이 올바르지 않습니다.                             |
+|       `400` | `INVALID_LOGIN_EMAIL`               | 학교 이메일만 회원가입이 가능합니다.                         |
 |       `400` | `MISSING_LOGIN_PASSWORD`            | 비밀번호는 필수입니다.                                       |
 |       `400` | `MISSING_EMAIL_VERIFICATION_TOKEN`  | 이메일 인증 토큰은 필수입니다.                               |
 |       `400` | `INVALID_EMAIL_CODE`                | 이메일 인증 코드가 올바르지 않습니다.                        |
@@ -209,11 +209,11 @@ Nginx, 로드밸런서, API Gateway 같은 게이트웨이 계층에서 upstream
 
 | API                                       | 상황                         | code                               | message                                    |
 | ----------------------------------------- | ---------------------------- | ---------------------------------- | -------------------------------------------------------- |
-| `POST /api/auth/signup/email-code`        | 이메일 형식 오류             | `INVALID_EMAIL_CODE_REQUEST_EMAIL` | 이메일 형식이 올바르지 않습니다. |
+| `POST /api/auth/signup/email-code`        | 이메일 형식 오류             | `INVALID_EMAIL_CODE_REQUEST_EMAIL` | 학교 이메일만 회원가입이 가능합니다. |
 | `POST /api/auth/signup/email-code`        | 이미 가입된 이메일           | `EMAIL_ALREADY_EXISTS`             | 이미 가입된 이메일입니다. |
 | `POST /api/auth/signup/email-code/verify` | 인증 코드 불일치             | `INVALID_EMAIL_CODE`               | 이메일 인증 코드가 올바르지 않습니다. |
 | `POST /api/auth/signup/email-code/verify` | 인증 코드 만료               | `EXPIRED_EMAIL_CODE`               | 이메일 인증 코드가 만료되었습니다. |
-| `POST /api/auth/signup`                   | 이메일 형식 오류             | `INVALID_SIGNUP_EMAIL`             | 이메일 형식이 올바르지 않습니다. |
+| `POST /api/auth/signup`                   | 이메일 형식 오류             | `INVALID_SIGNUP_EMAIL`             | 학교 이메일만 회원가입이 가능합니다. |
 | `POST /api/auth/signup`                   | 비밀번호 형식 오류           | `INVALID_SIGNUP_PASSWORD`          | 비밀번호는 최소 8자 이상이어야 합니다. |
 | `POST /api/auth/signup`                   | 닉네임 누락                  | `INVALID_SIGNUP_NICKNAME`          | 닉네임은 필수입니다. |
 | `POST /api/auth/signup`                   | 이메일 인증 토큰 누락        | `MISSING_EMAIL_VERIFICATION_TOKEN` | 이메일 인증을 완료해주세요. |
@@ -222,7 +222,7 @@ Nginx, 로드밸런서, API Gateway 같은 게이트웨이 계층에서 upstream
 | `POST /api/auth/signup` | 이메일 인증 토큰 재사용 | `USED_EMAIL_VERIFICATION_TOKEN` | 이미 사용된 이메일 인증입니다. 다시 인증해주세요. |
 | `POST /api/auth/signup` | 인증 이메일 불일치 | `EMAIL_VERIFICATION_EMAIL_MISMATCH` | 인증한 이메일과 회원가입 이메일이 일치하지 않습니다. |
 | `POST /api/auth/signup` | 이미 가입된 이메일 | `EMAIL_ALREADY_EXISTS` | 이미 가입된 이메일입니다. |
-| `POST /api/auth/login` | 이메일 형식 오류 | `INVALID_LOGIN_EMAIL` | 이메일 형식이 올바르지 않습니다. |
+| `POST /api/auth/login` | 이메일 형식 오류 | `INVALID_LOGIN_EMAIL` | 학교 이메일만 회원가입이 가능합니다. |
 | `POST /api/auth/login` | 비밀번호 누락 | `MISSING_LOGIN_PASSWORD` | 비밀번호는 필수입니다. |
 | `POST /api/auth/login` | 이메일 또는 비밀번호 불일치 | `INVALID_CREDENTIALS` | 이메일 또는 비밀번호가 올바르지 않습니다. |
 | `POST /api/auth/refresh` | refreshToken 오류 | `INVALID_REFRESH_TOKEN` | 로그인 정보가 올바르지 않습니다. 다시 시도해주세요. |
@@ -1359,7 +1359,7 @@ Errors:
 {
   "statusCode": 400,
   "code": "INVALID_EMAIL_CODE_REQUEST_EMAIL",
-  "message": "이메일 형식이 올바르지 않습니다.",
+  "message": "학교 이메일만 회원가입이 가능합니다.",
   "timestamp": "2026-04-15T12:00:00.000Z",
   "path": "/api/auth/signup/email-code"
 }
@@ -1426,7 +1426,7 @@ Errors:
 {
   "statusCode": 400,
   "code": "INVALID_SIGNUP_EMAIL",
-  "message": "이메일 형식이 올바르지 않습니다.",
+  "message": "학교 이메일만 회원가입이 가능합니다.",
   "timestamp": "2026-04-15T12:00:00.000Z",
   "path": "/api/auth/signup"
 }
@@ -1534,7 +1534,7 @@ Errors:
 {
   "statusCode": 400,
   "code": "INVALID_LOGIN_EMAIL",
-  "message": "이메일 형식이 올바르지 않습니다.",
+  "message": "학교 이메일만 회원가입이 가능합니다.",
   "timestamp": "2026-04-15T12:00:00.000Z",
   "path": "/api/auth/login"
 }

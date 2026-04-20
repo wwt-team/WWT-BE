@@ -7,14 +7,14 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 const validationMessages: Partial<Record<string, string>> = {
   [ERROR_CODES.INVALID_EMAIL_CODE_REQUEST_EMAIL]:
-    '이메일 형식이 올바르지 않습니다.',
-  [ERROR_CODES.INVALID_SIGNUP_EMAIL]: '이메일 형식이 올바르지 않습니다.',
+    '학교 이메일만 회원가입이 가능합니다.',
+  [ERROR_CODES.INVALID_SIGNUP_EMAIL]: '학교 이메일만 회원가입이 가능합니다.',
   [ERROR_CODES.INVALID_SIGNUP_PASSWORD]:
     '비밀번호는 최소 8자 이상이어야 합니다.',
   [ERROR_CODES.INVALID_SIGNUP_NICKNAME]: '닉네임은 필수입니다.',
   [ERROR_CODES.MISSING_EMAIL_VERIFICATION_TOKEN]:
     '이메일 인증을 완료해주세요.',
-  [ERROR_CODES.INVALID_LOGIN_EMAIL]: '이메일 형식이 올바르지 않습니다.',
+  [ERROR_CODES.INVALID_LOGIN_EMAIL]: '학교 이메일만 회원가입이 가능합니다.',
   [ERROR_CODES.MISSING_LOGIN_PASSWORD]: '비밀번호는 필수입니다.',
   [ERROR_CODES.INVALID_EMAIL_CODE]: '이메일 인증 코드가 올바르지 않습니다.',
   [ERROR_CODES.EXPIRED_EMAIL_CODE]: '이메일 인증 코드가 만료되었습니다.',
@@ -28,13 +28,16 @@ const validationMessages: Partial<Record<string, string>> = {
   [ERROR_CODES.INVALID_SEARCH_MAX_PRICE]:
     '최대 가격은 0 이상의 정수여야 합니다.',
   [ERROR_CODES.MISSING_PRODUCT_TITLE]: '상품 제목은 필수입니다.',
-  [ERROR_CODES.INVALID_PRODUCT_PRICE]: '상품 가격은 0 이상의 정수여야 합니다.',
+  [ERROR_CODES.INVALID_PRODUCT_PRICE]:
+    '상품 가격은 0 이상의 정수여야 합니다.',
   [ERROR_CODES.INVALID_PRODUCT_IMAGE_URLS]:
     '상품 이미지 형식이 올바르지 않습니다.',
-  [ERROR_CODES.INVALID_PRODUCT_STATUS]: '상품 상태가 올바르지 않습니다.',
+  [ERROR_CODES.INVALID_PRODUCT_STATUS]:
+    '상품 상태가 올바르지 않습니다.',
   [ERROR_CODES.INVALID_TRADE_REQUEST_STATUS]:
     '처리할 수 없는 거래 요청 상태입니다.',
-  [ERROR_CODES.INVALID_CHAT_MESSAGE]: '메시지 내용이 올바르지 않습니다.',
+  [ERROR_CODES.INVALID_CHAT_MESSAGE]:
+    '메시지 내용이 올바르지 않습니다.',
   [ERROR_CODES.INVALID_REFRESH_TOKEN]:
     '로그인 정보가 올바르지 않습니다. 다시 시도해주세요.',
 };
