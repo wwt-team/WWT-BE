@@ -1,13 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import type { RequestUser } from '../../../../common/types/request-user.type';
 import { UsersService } from '../../users.service';
+import { UpdateMeDto } from './dto/update-me.dto';
 
 @Injectable()
-export class MeService {
+export class UpdateMeService {
   constructor(private readonly usersService: UsersService) {}
 
-  async getMe(currentUser: RequestUser) {
-    const user = await this.usersService.findByIdOrThrow(currentUser.id);
+  async updateMe(currentUser: RequestUser, dto: UpdateMeDto) {
+    const user = await this.usersService.updateProfileImage(
+      currentUser.id,
+      dto.profileImageUrl ?? null,
+    );
 
     return {
       id: Number(user.id),

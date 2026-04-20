@@ -38,6 +38,8 @@ const validationMessages: Partial<Record<string, string>> = {
     '처리할 수 없는 거래 요청 상태입니다.',
   [ERROR_CODES.INVALID_CHAT_MESSAGE]:
     '메시지 내용이 올바르지 않습니다.',
+  [ERROR_CODES.INVALID_PROFILE_IMAGE_URL]:
+    '프로필 이미지 URL 형식이 올바르지 않습니다.',
   [ERROR_CODES.INVALID_REFRESH_TOKEN]:
     '로그인 정보가 올바르지 않습니다. 다시 시도해주세요.',
 };

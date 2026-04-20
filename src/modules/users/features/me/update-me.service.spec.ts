@@ -1,33 +1,34 @@
-import { MeService } from './me.service';
+import { UpdateMeService } from './update-me.service';
 
-describe('MeService', () => {
+describe('UpdateMeService', () => {
   const usersService = {
-    findByIdOrThrow: jest.fn(),
+    updateProfileImage: jest.fn(),
   };
 
-  const service = new MeService(usersService as never);
+  const service = new UpdateMeService(usersService as never);
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('returns only the documented profile fields', async () => {
+  it('updates profile image and returns documented profile fields', async () => {
     const createdAt = new Date('2026-04-19T00:00:00.000Z');
-    const updatedAt = new Date('2026-04-19T01:00:00.000Z');
     const emailVerifiedAt = new Date('2026-04-18T00:00:00.000Z');
 
-    usersService.findByIdOrThrow.mockResolvedValue({
+    usersService.updateProfileImage.mockResolvedValue({
       id: '1',
       email: 'user@example.com',
       nickname: 'tester',
       emailVerifiedAt,
       profileImageUrl: 'https://example.com/profile.png',
       createdAt,
-      updatedAt,
     });
 
     await expect(
-      service.getMe({ id: '1', email: 'user@example.com' }),
+      service.updateMe(
+        { id: '1', email: 'user@example.com' },
+        { profileImageUrl: 'https://example.com/profile.png' },
+      ),
     ).resolves.toEqual({
       id: 1,
       email: 'user@example.com',

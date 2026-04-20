@@ -1,9 +1,11 @@
-import { Controller, Get, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Query, UseGuards } from '@nestjs/common';
 import { AuthErrorMessage } from '../../common/decorators/auth-error-message.decorator';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import type { RequestUser } from '../../common/types/request-user.type';
 import { MeService } from './features/me/me.service';
+import { UpdateMeDto } from './features/me/dto/update-me.dto';
+import { UpdateMeService } from './features/me/update-me.service';
 import { MyProductsQueryDto } from './features/my-products/dto/my-products-query.dto';
 import { MyProductsService } from './features/my-products/my-products.service';
 
@@ -11,6 +13,7 @@ import { MyProductsService } from './features/my-products/my-products.service';
 export class UsersController {
   constructor(
     private readonly meService: MeService,
+    private readonly updateMeService: UpdateMeService,
     private readonly myProductsService: MyProductsService,
   ) {}
 
@@ -19,6 +22,13 @@ export class UsersController {
   @AuthErrorMessage('내 정보를 조회하려면 인증이 필요합니다.')
   getMe(@CurrentUser() user: RequestUser) {
     return this.meService.getMe(user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('me')
+  @AuthErrorMessage('내 정보를 수정하려면 인증이 필요합니다.')
+  updateMe(@CurrentUser() user: RequestUser, @Body() dto: UpdateMeDto) {
+    return this.updateMeService.updateMe(user, dto);
   }
 
   @UseGuards(JwtAuthGuard)

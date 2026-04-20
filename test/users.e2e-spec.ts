@@ -2,6 +2,7 @@ import { HttpStatus, type INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { UsersController } from '../src/modules/users/users.controller';
 import { MeService } from '../src/modules/users/features/me/me.service';
+import { UpdateMeService } from '../src/modules/users/features/me/update-me.service';
 import { MyProductsService } from '../src/modules/users/features/my-products/my-products.service';
 import { createE2EApp } from './support/create-e2e-app';
 
@@ -9,6 +10,7 @@ describe('UsersController (e2e)', () => {
   let app: INestApplication;
 
   const meService = { getMe: jest.fn() };
+  const updateMeService = { updateMe: jest.fn() };
   const myProductsService = { getMyProducts: jest.fn() };
 
   beforeAll(async () => {
@@ -16,6 +18,7 @@ describe('UsersController (e2e)', () => {
       controllers: [UsersController],
       providers: [
         { provide: MeService, useValue: meService },
+        { provide: UpdateMeService, useValue: updateMeService },
         { provide: MyProductsService, useValue: myProductsService },
       ],
     });
@@ -43,6 +46,7 @@ describe('UsersController (e2e)', () => {
       email: 'user@example.com',
       nickname: 'tester',
       emailVerifiedAt: null,
+      profileImageUrl: 'https://example.com/profile.png',
       createdAt: '2026-04-19T00:00:00.000Z',
     });
 
@@ -53,6 +57,38 @@ describe('UsersController (e2e)', () => {
       .expect(HttpStatus.OK);
 
     expect(response.body.email).toBe('user@example.com');
+    expect(response.body.profileImageUrl).toBe('https://example.com/profile.png');
+  });
+
+  it('validates profile image url on update', async () => {
+    const response = await request(app.getHttpServer())
+      .patch('/api/users/me')
+      .set('x-test-user-id', 'user-1')
+      .set('x-test-user-email', 'user@example.com')
+      .send({ profileImageUrl: 'not-a-url' })
+      .expect(HttpStatus.BAD_REQUEST);
+
+    expect(response.body.code).toBe('INVALID_PROFILE_IMAGE_URL');
+  });
+
+  it('updates my profile image', async () => {
+    updateMeService.updateMe.mockResolvedValue({
+      id: 1,
+      email: 'user@example.com',
+      nickname: 'tester',
+      emailVerifiedAt: null,
+      profileImageUrl: 'https://example.com/profile.png',
+      createdAt: '2026-04-19T00:00:00.000Z',
+    });
+
+    const response = await request(app.getHttpServer())
+      .patch('/api/users/me')
+      .set('x-test-user-id', 'user-1')
+      .set('x-test-user-email', 'user@example.com')
+      .send({ profileImageUrl: 'https://example.com/profile.png' })
+      .expect(HttpStatus.OK);
+
+    expect(response.body.profileImageUrl).toBe('https://example.com/profile.png');
   });
 
   it('validates my products query', async () => {

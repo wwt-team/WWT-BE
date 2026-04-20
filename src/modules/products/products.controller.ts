@@ -25,7 +25,9 @@ import { ProductSearchQueryDto } from './features/search/dto/product-search-quer
 import { ProductSearchService } from './features/search/product-search.service';
 import { UpdateProductStatusDto } from './features/status/dto/update-product-status.dto';
 import { UpdateProductStatusService } from './features/status/update-product-status.service';
+import { UpdateProductImagesDto } from './features/update/dto/update-product-images.dto';
 import { UpdateProductDto } from './features/update/dto/update-product.dto';
+import { UpdateProductImagesService } from './features/update/update-product-images.service';
 import { UpdateProductService } from './features/update/update-product.service';
 
 @Controller('products')
@@ -36,6 +38,7 @@ export class ProductsController {
     private readonly productDetailService: ProductDetailService,
     private readonly createProductService: CreateProductService,
     private readonly updateProductService: UpdateProductService,
+    private readonly updateProductImagesService: UpdateProductImagesService,
     private readonly deleteProductService: DeleteProductService,
     private readonly updateProductStatusService: UpdateProductStatusService,
   ) {}
@@ -71,6 +74,17 @@ export class ProductsController {
     @CurrentUser() user: RequestUser,
   ) {
     return this.updateProductService.update(productId, dto, user);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':productId/images')
+  @AuthErrorMessage('상품 이미지를 수정하려면 인증이 필요합니다.')
+  updateImages(
+    @Param('productId') productId: string,
+    @Body() dto: UpdateProductImagesDto,
+    @CurrentUser() user: RequestUser,
+  ) {
+    return this.updateProductImagesService.updateImages(productId, dto, user);
   }
 
   @UseGuards(JwtAuthGuard)

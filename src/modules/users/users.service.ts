@@ -43,4 +43,10 @@ export class UsersService {
     const user = this.usersRepository.create(input);
     return this.usersRepository.save(user);
   }
+
+  async updateProfileImage(userId: string, profileImageUrl: string | null) {
+    const user = await this.findByIdOrThrow(userId);
+    user.profileImageUrl = profileImageUrl;
+    return this.usersRepository.save(user);
+  }
 }

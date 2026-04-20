@@ -9,6 +9,7 @@ import { ProductDetailService } from './features/detail/product-detail.service';
 import { ProductListService } from './features/list/product-list.service';
 import { ProductSearchService } from './features/search/product-search.service';
 import { UpdateProductStatusService } from './features/status/update-product-status.service';
+import { UpdateProductImagesService } from './features/update/update-product-images.service';
 import { UpdateProductService } from './features/update/update-product.service';
 
 @Module({
@@ -21,6 +22,7 @@ import { UpdateProductService } from './features/update/update-product.service';
     ProductDetailService,
     CreateProductService,
     UpdateProductService,
+    UpdateProductImagesService,
     DeleteProductService,
     UpdateProductStatusService,
   ],

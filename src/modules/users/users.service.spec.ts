@@ -43,4 +43,28 @@ describe('UsersService', () => {
       });
     });
   });
+
+  describe('updateProfileImage', () => {
+    it('updates profile image for existing user', async () => {
+      const user = {
+        id: '1',
+        email: 'user@example.com',
+        nickname: 'tester',
+        profileImageUrl: null,
+      };
+
+      usersRepository.findOne.mockResolvedValue(user);
+      usersRepository.save.mockResolvedValue({
+        ...user,
+        profileImageUrl: 'https://example.com/profile.png',
+      });
+
+      await expect(
+        service.updateProfileImage('1', 'https://example.com/profile.png'),
+      ).resolves.toMatchObject({
+        id: '1',
+        profileImageUrl: 'https://example.com/profile.png',
+      });
+    });
+  });
 });

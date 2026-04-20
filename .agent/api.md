@@ -230,6 +230,8 @@ Nginx, 로드밸런서, API Gateway 같은 게이트웨이 계층에서 upstream
 | `POST /api/auth/refresh` | 폐기된 refreshToken 재사용 | `REFRESH_TOKEN_REUSE_DETECTED` | 로그인이 만료되었습니다. 다시 로그인해주세요. |
 | `POST /api/auth/logout` | accessToken 없음 또는 만료 | `UNAUTHORIZED` | 로그아웃하려면 인증이 필요합니다. |
 | `GET /api/users/me` | accessToken 없음 또는 만료 | `UNAUTHORIZED` | 내 정보를 조회하려면 인증이 필요합니다. |
+| `PATCH /api/users/me` | accessToken 없음 또는 만료 | `UNAUTHORIZED` | 내 정보를 수정하려면 인증이 필요합니다. |
+| `PATCH /api/users/me` | 프로필 이미지 URL 형식 오류 | `INVALID_PROFILE_IMAGE_URL` | 프로필 이미지 URL 형식이 올바르지 않습니다. |
 | `GET /api/users/me/products` | accessToken 없음 또는 만료 | `UNAUTHORIZED` | 내 상품 목록을 조회하려면 인증이 필요합니다. |
 
 #### 상품
@@ -251,6 +253,10 @@ Nginx, 로드밸런서, API Gateway 같은 게이트웨이 계층에서 upstream
 | `PATCH /api/products/{productId}`        | accessToken 없음 또는 만료 | `UNAUTHORIZED`               | 상품을 수정하려면 인증이 필요합니다.                       |
 | `PATCH /api/products/{productId}`        | 판매자 아님                | `FORBIDDEN`                  | 상품을 수정할 권한이 없습니다.                             |
 | `PATCH /api/products/{productId}`        | 상품 없음                  | `PRODUCT_NOT_FOUND`          | 상품을 찾을 수 없습니다.                                   |
+| `PATCH /api/products/{productId}/images` | accessToken 없음 또는 만료 | `UNAUTHORIZED`               | 상품 이미지를 수정하려면 인증이 필요합니다.                |
+| `PATCH /api/products/{productId}/images` | 판매자 아님                | `FORBIDDEN`                  | 상품 이미지를 수정할 권한이 없습니다.                      |
+| `PATCH /api/products/{productId}/images` | 상품 없음                  | `PRODUCT_NOT_FOUND`          | 상품을 찾을 수 없습니다.                                   |
+| `PATCH /api/products/{productId}/images` | 이미지 URL 오류            | `INVALID_PRODUCT_IMAGE_URLS` | 상품 이미지 형식이 올바르지 않습니다.                      |
 | `DELETE /api/products/{productId}`       | accessToken 없음 또는 만료 | `UNAUTHORIZED`               | 상품을 삭제하려면 인증이 필요합니다.                       |
 | `DELETE /api/products/{productId}`       | 판매자 아님                | `FORBIDDEN`                  | 상품을 삭제할 권한이 없습니다.                             |
 | `DELETE /api/products/{productId}`       | 상품 없음                  | `PRODUCT_NOT_FOUND`          | 상품을 찾을 수 없습니다.                                   |
@@ -526,11 +532,46 @@ Response `200 OK`:
   "email": "user@example.com",
   "nickname": "홍길동",
   "emailVerifiedAt": "2026-04-15T12:00:00.000Z",
+  "profileImageUrl": "https://example.com/profiles/user-1.png",
   "createdAt": "2026-04-15T12:00:00.000Z"
 }
 ```
 
-### 3.8 마이페이지 - 내 상품 목록
+### 3.8 내 정보 수정
+
+```http
+PATCH /api/users/me
+```
+
+인증: 필요
+
+Request Body:
+
+```json
+{
+  "profileImageUrl": "https://example.com/profiles/user-1.png"
+}
+```
+
+Response `200 OK`:
+
+```json
+{
+  "id": 1,
+  "email": "user@example.com",
+  "nickname": "홍길동",
+  "emailVerifiedAt": "2026-04-15T12:00:00.000Z",
+  "profileImageUrl": "https://example.com/profiles/user-1.png",
+  "createdAt": "2026-04-15T12:00:00.000Z"
+}
+```
+
+정책:
+
+- 사용자는 자신의 프로필 이미지 URL을 수정할 수 있다.
+- 이미지 업로드 자체는 외부 스토리지(S3 등)에서 처리하고, 백엔드는 URL만 저장한다.
+
+### 3.9 마이페이지 - 내 상품 목록
 
 ```http
 GET /api/users/me/products?page=1&limit=20
@@ -749,7 +790,45 @@ Response `200 OK`:
 
 - 판매자만 수정할 수 있다.
 
-### 4.6 상품 삭제
+### 4.6 상품 이미지 수정
+
+```http
+PATCH /api/products/{productId}/images
+```
+
+인증: 필요
+
+Request Body:
+
+```json
+{
+  "imageUrls": [
+    "https://example.com/product-1.jpg",
+    "https://example.com/product-2.jpg"
+  ]
+}
+```
+
+Response `200 OK`:
+
+```json
+{
+  "id": 1,
+  "imageUrls": [
+    "https://example.com/product-1.jpg",
+    "https://example.com/product-2.jpg"
+  ],
+  "updatedAt": "2026-04-15T12:00:00.000Z"
+}
+```
+
+정책:
+
+- 상품 이미지는 최대 10장까지 저장할 수 있다.
+- 이미지 업로드 자체는 외부 스토리지(S3 등)에서 처리하고, 백엔드는 URL 목록만 저장한다.
+- 판매자만 자신의 상품 이미지 목록을 수정할 수 있다.
+
+### 4.7 상품 삭제
 
 ```http
 DELETE /api/products/{productId}
@@ -763,7 +842,7 @@ Response `204 No Content`
 
 - 판매자만 삭제할 수 있다.
 
-### 4.7 상품 거래 상태 변경
+### 4.8 상품 거래 상태 변경
 
 ```http
 PATCH /api/products/{productId}/status
@@ -1655,7 +1734,44 @@ Errors:
 }
 ```
 
-### 10.8 `GET /api/users/me/products`
+### 10.8 `PATCH /api/users/me`
+
+Success `200 OK`:
+
+```json
+{
+  "id": 1,
+  "email": "user@example.com",
+  "nickname": "홍길동",
+  "emailVerifiedAt": "2026-04-15T12:00:00.000Z",
+  "profileImageUrl": "https://example.com/profiles/user-1.png",
+  "createdAt": "2026-04-15T12:00:00.000Z"
+}
+```
+
+Errors:
+
+```json
+{
+  "statusCode": 400,
+  "code": "INVALID_PROFILE_IMAGE_URL",
+  "message": "프로필 이미지 URL 형식이 올바르지 않습니다.",
+  "timestamp": "2026-04-15T12:00:00.000Z",
+  "path": "/api/users/me"
+}
+```
+
+```json
+{
+  "statusCode": 401,
+  "code": "UNAUTHORIZED",
+  "message": "내 정보를 수정하려면 인증이 필요합니다.",
+  "timestamp": "2026-04-15T12:00:00.000Z",
+  "path": "/api/users/me"
+}
+```
+
+### 10.9 `GET /api/users/me/products`
 
 Success `200 OK`:
 
@@ -1688,7 +1804,7 @@ Errors:
 }
 ```
 
-### 10.9 `GET /api/products`
+### 10.10 `GET /api/products`
 
 Success `200 OK`:
 
@@ -1932,7 +2048,44 @@ Errors:
 }
 ```
 
-### 10.14 `DELETE /api/products/{productId}`
+### 10.14 `PATCH /api/products/{productId}/images`
+
+Success `200 OK`:
+
+```json
+{
+  "id": 1,
+  "imageUrls": [
+    "https://example.com/product-1.jpg",
+    "https://example.com/product-2.jpg"
+  ],
+  "updatedAt": "2026-04-15T12:00:00.000Z"
+}
+```
+
+Errors:
+
+```json
+{
+  "statusCode": 401,
+  "code": "UNAUTHORIZED",
+  "message": "상품 이미지를 수정하려면 인증이 필요합니다.",
+  "timestamp": "2026-04-15T12:00:00.000Z",
+  "path": "/api/products/1/images"
+}
+```
+
+```json
+{
+  "statusCode": 400,
+  "code": "INVALID_PRODUCT_IMAGE_URLS",
+  "message": "상품 이미지 형식이 올바르지 않습니다.",
+  "timestamp": "2026-04-15T12:00:00.000Z",
+  "path": "/api/products/1/images"
+}
+```
+
+### 10.15 `DELETE /api/products/{productId}`
 
 Success `204 No Content`
 
@@ -1968,7 +2121,7 @@ Errors:
 }
 ```
 
-### 10.15 `PATCH /api/products/{productId}/status`
+### 10.16 `PATCH /api/products/{productId}/status`
 
 Success `200 OK`:
 

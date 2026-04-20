@@ -23,6 +23,14 @@ export class User {
   @Column({ name: 'email_verified_at', type: 'timestamp', nullable: true })
   emailVerifiedAt!: Date | null;
 
+  @Column({
+    name: 'profile_image_url',
+    type: 'varchar',
+    length: 2048,
+    nullable: true,
+  })
+  profileImageUrl!: string | null;
+
   @CreateDateColumn({ name: 'created_at', type: 'timestamp' })
   createdAt!: Date;
 

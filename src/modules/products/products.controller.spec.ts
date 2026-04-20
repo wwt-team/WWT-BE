@@ -9,6 +9,7 @@ describe('ProductsController', () => {
   const productDetailService = { detail: jest.fn() };
   const createProductService = { create: jest.fn() };
   const updateProductService = { update: jest.fn() };
+  const updateProductImagesService = { updateImages: jest.fn() };
   const deleteProductService = { delete: jest.fn() };
   const updateProductStatusService = { updateStatus: jest.fn() };
 
@@ -18,6 +19,7 @@ describe('ProductsController', () => {
     productDetailService as never,
     createProductService as never,
     updateProductService as never,
+    updateProductImagesService as never,
     deleteProductService as never,
     updateProductStatusService as never,
   );
@@ -57,6 +59,17 @@ describe('ProductsController', () => {
     expect(updateProductService.update).toHaveBeenCalledWith('1', dto, user);
   });
 
+  it('delegates product image update request', () => {
+    const dto = { imageUrls: ['https://example.com/product-1.jpg'] };
+    const user = { id: '1', email: 'test@example.com' };
+    controller.updateImages('1', dto as never, user);
+    expect(updateProductImagesService.updateImages).toHaveBeenCalledWith(
+      '1',
+      dto,
+      user,
+    );
+  });
+
   it('delegates delete request', () => {
     const user = { id: '1', email: 'test@example.com' };
     controller.delete('1', user);
@@ -86,6 +99,12 @@ describe('ProductsController', () => {
     ).toBeDefined();
     expect(
       Reflect.getMetadata(AUTH_ERROR_MESSAGE_KEY, ProductsController.prototype.update),
+    ).toBeDefined();
+    expect(
+      Reflect.getMetadata(
+        AUTH_ERROR_MESSAGE_KEY,
+        ProductsController.prototype.updateImages,
+      ),
     ).toBeDefined();
     expect(
       Reflect.getMetadata(AUTH_ERROR_MESSAGE_KEY, ProductsController.prototype.delete),

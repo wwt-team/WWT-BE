@@ -6,6 +6,7 @@ import { ProductDetailService } from '../src/modules/products/features/detail/pr
 import { ProductListService } from '../src/modules/products/features/list/product-list.service';
 import { ProductSearchService } from '../src/modules/products/features/search/product-search.service';
 import { UpdateProductStatusService } from '../src/modules/products/features/status/update-product-status.service';
+import { UpdateProductImagesService } from '../src/modules/products/features/update/update-product-images.service';
 import { UpdateProductService } from '../src/modules/products/features/update/update-product.service';
 import { ProductsController } from '../src/modules/products/products.controller';
 import { createE2EApp } from './support/create-e2e-app';
@@ -18,6 +19,7 @@ describe('ProductsController (e2e)', () => {
   const productDetailService = { detail: jest.fn() };
   const createProductService = { create: jest.fn() };
   const updateProductService = { update: jest.fn() };
+  const updateProductImagesService = { updateImages: jest.fn() };
   const deleteProductService = { delete: jest.fn() };
   const updateProductStatusService = { updateStatus: jest.fn() };
 
@@ -30,6 +32,10 @@ describe('ProductsController (e2e)', () => {
         { provide: ProductDetailService, useValue: productDetailService },
         { provide: CreateProductService, useValue: createProductService },
         { provide: UpdateProductService, useValue: updateProductService },
+        {
+          provide: UpdateProductImagesService,
+          useValue: updateProductImagesService,
+        },
         { provide: DeleteProductService, useValue: deleteProductService },
         {
           provide: UpdateProductStatusService,
@@ -108,5 +114,35 @@ describe('ProductsController (e2e)', () => {
       .expect(HttpStatus.BAD_REQUEST);
 
     expect(response.body.code).toBe('INVALID_PRODUCT_STATUS');
+  });
+
+  it('validates product image urls on image update', async () => {
+    const response = await request(app.getHttpServer())
+      .patch('/api/products/product-1/images')
+      .set('x-test-user-id', 'seller-1')
+      .set('x-test-user-email', 'seller@example.com')
+      .send({ imageUrls: ['not-a-url'] })
+      .expect(HttpStatus.BAD_REQUEST);
+
+    expect(response.body.code).toBe('INVALID_PRODUCT_IMAGE_URLS');
+  });
+
+  it('updates product image urls', async () => {
+    updateProductImagesService.updateImages.mockResolvedValue({
+      id: 1,
+      imageUrls: ['https://example.com/product-1.jpg'],
+      updatedAt: '2026-04-20T00:00:00.000Z',
+    });
+
+    const response = await request(app.getHttpServer())
+      .patch('/api/products/product-1/images')
+      .set('x-test-user-id', 'seller-1')
+      .set('x-test-user-email', 'seller@example.com')
+      .send({ imageUrls: ['https://example.com/product-1.jpg'] })
+      .expect(HttpStatus.OK);
+
+    expect(response.body.imageUrls).toEqual([
+      'https://example.com/product-1.jpg',
+    ]);
   });
 });
